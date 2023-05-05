@@ -1,7 +1,7 @@
 import numpy as np
 from qpsolvers import solve_qp
-from stein import KernelSteinDiscrepancy
-from posdef import nearestPD, isPD
+from jaxtein.stein import KernelSteinDiscrepancy
+from jaxtein.posdef import nearestPD, isPD
 
 class SteinImportanceSampling:
     def __init__(self, k0):
