@@ -6,7 +6,7 @@ from mcmclib.metropolis import mala_adapt
 
 from jaxtein.kernel import k_kgm
 from jaxtein.stein import SteinKernel
-from jaxtein.thinning import PiDistribution
+from jaxtein.impsamp import PiDistribution
 from jaxtein.impsamp import SteinImportanceSampling
 
 class SisEmpStudy:
