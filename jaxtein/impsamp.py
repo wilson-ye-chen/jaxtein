@@ -1,4 +1,7 @@
 import numpy as np
+import jax.numpy as jnp
+from jax import jit, vmap
+from jax import jacfwd, jacrev
 from qpsolvers import solve_qp
 from jaxtein.stein import KernelSteinDiscrepancy
 from jaxtein.posdef import nearestPD, isPD

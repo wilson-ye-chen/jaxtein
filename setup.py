@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='jaxtein',
-    version='0.2.3',
+    version='0.2.4',
     description='Stein Thinning for JAX',
     url='https://github.com/wilson-ye-chen/jaxtein',
     author='Wilson Ye Chen',
