@@ -49,15 +49,15 @@ class SisEmpStudy:
         dlogpi_was1 = jit(jacrev(logpi_was1))
 
         # MALA
-        a = self.n_eph * [0.4]
+        a = (self.n_eph - 1) * [0.4]
         e = (self.n_eph - 1) * [1000] + [self.n_mala]
         c0 = jnp.eye(self.n_dim)
         self.mala_p = mala_adapt(
-            self.logp, self.dlogp, self.map, 1., c0, a, e)[2][-1]
+            self.logp, self.dlogp, self.map, 1., c0, a, e)[0][-1]
         self.mala_kgm3 = mala_adapt(
-            pi_kgm3.logpdf, pi_kgm3.dlogpdf, self.map, 1., c0, a, e)[2][-1]
+            pi_kgm3.logpdf, pi_kgm3.dlogpdf, self.map, 1., c0, a, e)[0][-1]
         self.mala_was1 = mala_adapt(
-            logpi_was1, dlogpi_was1, self.map, 1., c0, a, e)[2][-1]
+            logpi_was1, dlogpi_was1, self.map, 1., c0, a, e)[0][-1]
 
         # SIS-KGM3
         sis = SteinImportanceSampling(k0)
