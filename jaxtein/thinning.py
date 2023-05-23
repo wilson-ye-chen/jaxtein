@@ -1,8 +1,6 @@
-import numpy as np
 import jax.numpy as jnp
 from jax import jit, vmap
-from jax import jacfwd, jacrev
-from tqdm import tqdm
+from jax.lax import fori_loop
 
 class SteinThinning:
     def __init__(self, k0):
@@ -10,16 +8,23 @@ class SteinThinning:
         self.vfk0 = jit(vmap(k0.evaluate, 0, 0))
 
     def thin(self, x, m):
-        # Pre-allocate arrays
         n = x.shape[0]
-        k0m = np.empty((n, m))
-        idx = np.empty(m, dtype=np.uint32)
+        k0s = jnp.zeros(n)
+        idx = jnp.zeros(m, dtype=jnp.int32)
+        ksd = jnp.zeros(m)
 
-        # Populate columns of k0m as new points are selected
-        k0m[:, 0] = self.vfk0(x, x)
-        idx[0] = np.argmin(k0m[:, 0])
-        for i in tqdm(range(1, m)):
-            x_last = np.tile(x[idx[i - 1]], (n, 1))
-            k0m[:, i] = self.vfk0(x, x_last)
-            idx[i] = np.argmin(k0m[:, 0] + 2 * np.sum(k0m[:, 1:(i + 1)], axis=1))
-        return idx
+        k0d = self.vfk0(x, x)
+        idx = idx.at[0].set(jnp.argmin(k0d))
+        ksd = ksd.at[0].set(k0d[idx[0]])
+
+        def add_idx(i, val):
+            k0s, idx, ksd = val
+            x_last = jnp.tile(x[idx[i - 1]], (n, 1))
+            k0s += self.vfk0(x, x_last)
+            tmp = k0d + 2 * k0s
+            idx = idx.at[i].set(jnp.argmin(tmp))
+            ksd = ksd.at[i].set(tmp[idx[i]])
+            return (k0s, idx, ksd)
+
+        k0s, idx, ksd = fori_loop(1, m, add_idx, (k0s, idx, ksd))
+        return (idx, ksd)
